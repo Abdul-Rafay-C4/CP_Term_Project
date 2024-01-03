@@ -70,7 +70,7 @@ void display_health(int& health, int og_health);
 void clear_n();
 int random(int first_value, int second_value);
 //21-12-23(16:00)
-void throw_animation(string& weapon, int x, int y, int distance, int time, string& colour, bool check);
+void throw_animation(string weapon, int x, int y, int distance, int time, bool check);
 void goto_coordinates(int x_coords, int y_coords);
 
 //25-12-23(02:25)
@@ -124,12 +124,14 @@ void playSound(const char* soundFile);
 
 int main()
 {
+	system("mode 120");
 	player.name = "ABC";
-	player.health = 100;
+	player.health = 500;
 	player.damage = 15;
 	player.stamina = 100;
+	player.critical_hit_chance = 30;
 	
-	battle_system(1,100,80,10,30,"Golaith",'~',win_lose,30);
+	battle_system(1,500,80,10,40,"Golaith ",'~',win_lose,50);
 	/*Sleep(50);
 	blankscreen();
 	Sleep(150);
@@ -280,12 +282,12 @@ void goto_coordinates(int x_coords, int y_coords)
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-void throw_animation(string& weapon, int x, int y, int distance, int time, string& colour, bool check)
+void throw_animation(string weapon, int x, int y, int distance, int time, bool check)
 {
 	while (true)
 	{
 		goto_coordinates(x, y);
-		cout << colour;
+		cout << yellow;
 		cout << weapon;
 		Sleep(time);
 
@@ -478,13 +480,13 @@ void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enem
 		
 		if(turn)
 		{
-			goto_coordinates(8,35);
-			cout << ">";
+			goto_coordinates(1,35);
+			cout << yellow << ">" << reset_colour;
 		}
 		else if(turn == false)
 		{
-			goto_coordinates(92,35);
-			cout << "<";
+			goto_coordinates(115,35);
+			cout << orange << "<" << reset_colour;
 		}
 		
 		goto_coordinates(10,35);
@@ -495,9 +497,10 @@ void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enem
 		goto_coordinates(1,40);
 		cout << "> Attack \t (a)  \t> Defend \t (d)  \t> Skip \t (t)";
 		
-		user_enter = _getch();
 		if(turn)
 		{
+			user_enter = _getch();
+			
 			if(user_enter == '1')
 			{
 				
@@ -508,9 +511,11 @@ void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enem
 			}
 			else if(user_enter == 'a')
 			{
-				string colour = "yellow";
-				throw_animation(player.name, 10, 35, 80, 30, colour, true);
-				enemy_health -= hit_damage(player.damage, player.stamina, player.critical_hit_chance, max_critical_damage);
+				int dam;
+				throw_animation("~", 10, 35, 90, 5, true);
+				dam = hit_damage(player.damage, player.stamina, player.critical_hit_chance, max_critical_damage);
+				enemy_health -= dam;
+				player.stamina -= stamina_calculate(dam ,player.stamina);
 				turn = false;
 			}
 			else if(user_enter == 't')
@@ -521,11 +526,12 @@ void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enem
 		}
 		else if(turn == false)
 		{
-			string colour = "red";
+			int dam;
 			Sleep(1000);
-			//throw_animation()
-			throw_animation(enemy_name, 90, 35, 80, 30, colour, false);
-			player.health -= hit_damage(enemy_damage, enemy_stamina, difficulty > 1 ? 20 : 10, max_critical_damage_enemy);
+			throw_animation("~", 90, 35, 10, 5, false);
+			dam = hit_damage(enemy_damage, enemy_stamina, difficulty > 1 ? 20 : 10, max_critical_damage_enemy);
+			player.health -= dam;
+			enemy_stamina -= stamina_calculate(dam, enemy_stamina);
 			turn = true;
 		}
 	}while(player.health > 0 && enemy_health > 0);
