@@ -1,0 +1,33 @@
+visually-goodlooking gamelogo 
+
+character name = user defined
+character attributes = 1) Mage 2) Meele 3) Rogue
+
+factor;
+
+level up increases : health, stamina, att. chances 
+
+weapons
+health
+stamina
+rand()
+
+additions;
+
+shop
+mining
+mini-game
+inventory
+level up
+game saving system
+cheatscodes
+settings
+
+warrior : 120 hp           normal crict. hit              high weapon damage        high defence
+mage    :  80 hp           medium crict. hit              high weapon damage        med defence
+rogue   : 100 hp           dangerous crict. hit           normal weapon damage      low defence
+
+color included....
+
+make a game icon
+

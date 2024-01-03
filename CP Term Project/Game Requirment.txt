@@ -1,0 +1,27 @@
+
+>>?>> Basic Thing that game has;
+
+> player create a character
+> explore the world
+> engage in battle
+> complete quests
+
+>> Character Creation
+< Warrior, Mage and Rogue
+< Their Health and Exp
+
+> Create a function that display Character Info
+
+>> Different Quests
+< Changing Difficulty
+< Player can choose their mission
+
+>> Main Story
+< Side Story
+
+>> Inventory and Exit System
+
+>>?>> Implementation;
+
+struct used for player and quests
+
