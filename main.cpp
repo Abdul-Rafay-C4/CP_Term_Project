@@ -12,6 +12,7 @@
 #include<windows.h>
 #undef max
 #pragma comment(lib, "Winmm.lib")
+#pragma comment(lib, "-linmm.lib")
 #include "mmsystem.h"
 
 using namespace std;
@@ -34,16 +35,22 @@ using namespace std;
 struct character
 {
 	string name;
-	string char_class;
+	string _class;
 	int health;
 	int experience_points;
 	int stamina;
+	int level;
+	int critical_hit_chance;
+	int damage;
+	
 };
 
 character player;
 character boss1;
 
 string gamestory[13];
+
+bool win_lose;
 
 
 //-------------------------------------------------------------
@@ -59,12 +66,12 @@ int hit_damage(int damage, int& stamina, int chance, int max_critical_damage);
 int critical_damage(int& chance, int& max_damage);
 //19-12-23
 void weapondamage(int&);
-void health_display(int& health, int og_health);
+void display_health(int& health, int og_health);
 void clear_n();
 int random(int first_value, int second_value);
 //21-12-23(16:00)
-void throw_animation(string& weapon, int& x, int& y, int& distance, int& time, string& colour);
-void goto_coordinates(int& x_coords, int& y_coords);
+void throw_animation(string& weapon, int x, int y, int distance, int time, string& colour, bool check);
+void goto_coordinates(int x_coords, int y_coords);
 
 //25-12-23(02:25)
 void display_stamina(int& stamina, int og_stamina);
@@ -78,11 +85,17 @@ int percentage(int& value, int& og_value);
 void convert_to_uppercase(string& lowercase);
 void text_animation(string& sentence, string& colour, bool uppercase, int time = 30);
 
+//
+void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, char weapon, bool &win_lose, int max_critical_damage);
+
 //-------------------MUHAMMAD_HAMZA------------------------
 //16-12-23 (15:41)
 void getplayerinfo(character& player);
 void displayplayerinfo(character& player);
 void Quest(character& player);
+//3-01-2024(13:17)
+void level_up();
+void exp_calculate(int * playerHealth, int quest);
 
 
 
@@ -111,7 +124,13 @@ void playSound(const char* soundFile);
 
 int main()
 {
-	Sleep(50);
+	player.name = "ABC";
+	player.health = 100;
+	player.damage = 15;
+	player.stamina = 100;
+	
+	battle_system(1,100,80,10,30,"Golaith",'~',win_lose,30);
+	/*Sleep(50);
 	blankscreen();
 	Sleep(150);
 	gamelogoscreen();
@@ -121,7 +140,7 @@ int main()
 	//getplayerinfo(player);
 	//Quest(player);
 
-	return 0;
+	return 0; */
 }
 
 
@@ -173,7 +192,7 @@ int critical_damage(int& chance, int& max_damage)
 }
 // 19-12-23 (16:50)
 // Edit : 25-12-23 (02:15)
-void health_display(int& health, int og_health)
+void display_health(int& health, int og_health)
 {
 	int value;
 	value = percentage(health, og_health);
@@ -253,7 +272,7 @@ int random(int first_value, int second_value)
 }
 
 //21-12-23(16:00)
-void goto_coordinates(int& x_coords, int& y_coords)
+void goto_coordinates(int x_coords, int y_coords)
 {
 	COORD coord;
 	coord.X = x_coords;
@@ -261,7 +280,7 @@ void goto_coordinates(int& x_coords, int& y_coords)
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-void throw_animation(string& weapon, int& x, int& y, int& distance, int& time, string& colour)
+void throw_animation(string& weapon, int x, int y, int distance, int time, string& colour, bool check)
 {
 	while (true)
 	{
@@ -274,7 +293,14 @@ void throw_animation(string& weapon, int& x, int& y, int& distance, int& time, s
 		cout << " ";
 
 		cout << reset_colour;
-		x++;
+		if(check)
+		{
+			x++;
+		}
+		else
+		{
+			x--;
+		}
 
 		if (x == distance)
 		{
@@ -416,10 +442,102 @@ void text_animation(string& sentence, string& colour, bool uppercase, int time)
 	for (int i = 0; i < a; ++i)
 	{
 		cout << sentence[i];
-		PlaySound(TEXT("Sounds\\key_press_02.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_NOSTOP);
 		Sleep(time);
 	}
 	cout << reset_colour;
+}
+
+void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, char weapon, bool &win_lose, int max_critical_damage)
+{
+	int temp_health = player.health;
+	int temp_health_enemy = enemy_health;
+	int temp_stamina = player.stamina;
+	int temp_stamina_enemy = enemy_stamina;
+	
+	bool turn = true;
+	
+	char user_enter;
+	do
+	{
+		system("cls");
+		goto_coordinates(1,2);
+		cout << white << player.name << reset_colour;
+		goto_coordinates(100,2);
+		cout << red << enemy_name << reset_colour; 
+		goto_coordinates(1,3);
+		display_health(player.health , temp_health);
+		goto_coordinates(100,3);
+		display_health(enemy_health , temp_health_enemy);
+		goto_coordinates(1,4);
+		display_stamina(player.stamina , temp_stamina);	
+		goto_coordinates(100,4);
+		display_stamina(enemy_stamina, temp_stamina_enemy);
+		
+		goto_coordinates(1,12);
+		cout << "> leagendry Weapon \t (1) \n > Portion         \t (2)" ;
+		
+		if(turn)
+		{
+			goto_coordinates(8,35);
+			cout << ">";
+		}
+		else if(turn == false)
+		{
+			goto_coordinates(92,35);
+			cout << "<";
+		}
+		
+		goto_coordinates(10,35);
+		cout << player.name ;
+		goto_coordinates(90,35);
+		cout << orange << enemy_name << reset_colour;
+		
+		goto_coordinates(1,40);
+		cout << "> Attack \t (a)  \t> Defend \t (d)  \t> Skip \t (t)";
+		
+		user_enter = _getch();
+		if(turn)
+		{
+			if(user_enter == '1')
+			{
+				
+			}
+			else if(user_enter == '2')
+			{
+				
+			}
+			else if(user_enter == 'a')
+			{
+				string colour = "yellow";
+				throw_animation(player.name, 10, 35, 80, 30, colour, true);
+				enemy_health -= hit_damage(player.damage, player.stamina, player.critical_hit_chance, max_critical_damage);
+				turn = false;
+			}
+			else if(user_enter == 't')
+			{
+				stamina_recover(player.stamina);
+				turn = false;
+			}
+		}
+		else if(turn == false)
+		{
+			string colour = "red";
+			Sleep(1000);
+			//throw_animation()
+			throw_animation(enemy_name, 90, 35, 80, 30, colour, false);
+			player.health -= hit_damage(enemy_damage, enemy_stamina, difficulty > 1 ? 20 : 10, max_critical_damage_enemy);
+			turn = true;
+		}
+	}while(player.health > 0 && enemy_health > 0);
+	
+	if(player.health > 0)
+	{
+		win_lose = true;
+	}
+	else if(enemy_health > 0)
+	{
+		win_lose = false;
+	}
 }
 
 //-------------------MUHAMMAD_HAMZA------------------------
@@ -440,15 +558,15 @@ void getplayerinfo(character& player) //17-12-23(15:34)
 		cin >> choice;
 		switch (choice) {
 		case 1:
-			player.char_class = "Warrior";
+			player._class = "Warrior";
 			player.health = 120;
 			break;
 		case 2:
-			player.char_class = "Mage";
+			player._class = "Mage";
 			player.health = 80;
 			break;
 		case 3:
-			player.char_class = "Rogue";
+			player._class = "Rogue";
 			player.health = 100;
 			break;
 		default:
@@ -471,7 +589,7 @@ void displayplayerinfo(character& player)//17-12-23(15:34)
 {
 	cout << "PLAYER INFORMATION" << endl;
 	cout << "NAME :" << player.name << endl;
-	cout << "PLAYER CLASS :" << player.char_class << endl;
+	cout << "PLAYER CLASS :" << player._class << endl;
 	cout << "HEALTH :" << player.health << endl;
 	cout << "EXPERIENCE POINTS :" << player.experience_points << endl;
 }
@@ -481,7 +599,55 @@ void Quest(character& player)//17-12-23(15:34)
 	cout << "You reaches on a new quest!" << endl;
 	displayplayerinfo(player);
 }
-
+//3-01-2024(13:17)
+  void exp_calculate(int  * playerHealth, int quest)
+    {
+        
+    }
+ //3-01-2024(13:17)
+    void level_up()
+    {
+        if(player.experience_points == 100)
+        {
+            player.level = 1;
+        }
+        else if(player.experience_points == 250)
+        {
+            player.level = 2;
+        }
+        else if(player.experience_points == 500)
+        {
+            player.level = 3;
+        }
+        else if(player.experience_points == 1000)
+        {
+            player.level = 4;
+        }
+        else if(player.experience_points == 1550)
+        {
+            player.level = 5;
+        }
+        else if(player.experience_points == 2500)
+        {
+            player.level = 6;
+        }
+        else if(player.experience_points == 3500)
+        {
+            player.level = 7;
+        }
+        else if(player.experience_points == 5000)
+        {
+            player.level = 8;
+        }
+        else if(player.experience_points == 7500)
+        {
+            player.level = 9;
+        }
+        else if(player.experience_points == 10750)
+        {
+            player.level = 10;
+        }
+    }
 
 
 //-------------------MUHAMMAD_JIBRAN-----------------------
@@ -502,12 +668,12 @@ void dailougeAndStory()
 	gamestory[6] = "    So, basically there a three classes that describes the fighter's fighting style,\n    their strength (damage), health, stamina, weapons and their ability to hit precise ( critical hit )\n    because they will be trained like that.";
 	gamestory[7] = "    The Three Classes are ;\n\n    > Mage ( Preferred One ) : Magic Abilities\n\n           Health : 80\n           Stamina : 100\n           Damage : Med\n           Crit. Hit : 25 %\n\n    > Warrior ( Strongest ) : Damage Abilities\n\n           Health : 120\n           Stamina : 80\n           Damage : High\n           Crit. Hit : 10 %\n\n    > Rouge ( Stealth ) : Surprise Class\n\n           Health : 100\n           Stamina : 120\n           Damage : Med\n           Crit. Hit : 5 %\n\n    Choose One...";
 	//My turn
-	gamestory[8] = "    MAN: Tell me your class.\n    YOU: I choose " + player.char_class + ".\n    MAN: Now wait there.\n\n    After sometime...\n\n    MAN: Get ready for your trail fight.\n\n    I was ready for the fight. If you wondering how I know to fight, that's a good question.\n    It was just in the script.";
+	gamestory[8] = "    MAN: Tell me your class.\n    YOU: I choose " + player._class + ".\n    MAN: Now wait there.\n\n    After sometime...\n\n    MAN: Get ready for your trail fight.\n\n    I was ready for the fight. If you wondering how I know to fight, that's a good question.\n    It was just in the script.";
 	//trails round 1
 	gamestory[9] = "    But, You won't believe my fight opponent. It was Peter. I was thinking how I will fight him.";
 	gamestory[10] = "    I won against Peter but I wasn't not so happy. A Man came to me and told me that I will continue my training in thier academy in Tibet";
 	//after training
-	gamestory[11] = "    On my last day, I got an invitaion to meet the Master Sifu. When I entered his big wooden room, he told me to sit down...\n\n    SIFU: Do you know why I call you here ?\n    YOU: No, I don't.\n    SIFU: I know you are still an amateur, but you are a chosen one.\n    YOU: What ?\n    SIFU: Long time ago, this village was once called Santoki No Machi that means city of fighters.\n    There were all kind of fighters living and protecting this village from mystical attacks, that comes from another dimension.\n    As the time passes, the mystical creatures got powerful and eventually started killing the people and fighters there.\n    Then a mage named \"Delsagade\" stood from the outskirts of the city and stopped the mystical creatures from coming to this world\n    and that you can guess how the new name of the village came up.\n    YOU: Why are you telling me this and how does that make me a chosen one.\n    SIFU: Delsagade before his death, gave a prediction that when the mystical creatures become strong enough to break out of the portal, then a " + player.char_class + " with my birth mark will arise to stop them once and for all....\n";
+	gamestory[11] = "    On my last day, I got an invitaion to meet the Master Sifu. When I entered his big wooden room, he told me to sit down...\n\n    SIFU: Do you know why I call you here ?\n    YOU: No, I don't.\n    SIFU: I know you are still an amateur, but you are a chosen one.\n    YOU: What ?\n    SIFU: Long time ago, this village was once called Santoki No Machi that means city of fighters.\n    There were all kind of fighters living and protecting this village from mystical attacks, that comes from another dimension.\n    As the time passes, the mystical creatures got powerful and eventually started killing the people and fighters there.\n    Then a mage named \"Delsagade\" stood from the outskirts of the city and stopped the mystical creatures from coming to this world\n    and that you can guess how the new name of the village came up.\n    YOU: Why are you telling me this and how does that make me a chosen one.\n    SIFU: Delsagade before his death, gave a prediction that when the mystical creatures become strong enough to break out of the portal, then a " + player._class + " with my birth mark will arise to stop them once and for all....\n";
 	gamestory[12] = "    I am now in the jungles of Mongolia, looking for the signs to find anything ";
 }
 
@@ -823,15 +989,15 @@ void getplayerclass(character& player)
 		{
 			if (choice == '1')
 			{
-				player.char_class = "Mage";
+				player._class = "Mage";
 			}
 			else if (choice == '2')
 			{
-				player.char_class = "Warrior";
+				player._class = "Warrior";
 			}
 			else if (choice == '3')
 			{
-				player.char_class = "Rouge";
+				player._class = "Rouge";
 			}
 		}
 		else
@@ -847,7 +1013,3 @@ void fight()
 	cout << "";
 }
 
-void playSound(const char* soundFile)
-{
-	PlaySound(soundFile, NULL, SND_FILENAME | SND_ASYNC | SND_NOSTOP);
-}
