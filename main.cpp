@@ -12,7 +12,6 @@
 #include<windows.h>
 #undef max
 #pragma comment(lib, "Winmm.lib")
-#pragma comment(lib, "-linmm.lib")
 #include "mmsystem.h"
 
 using namespace std;
@@ -464,38 +463,45 @@ void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enem
 		system("cls");
 		goto_coordinates(1,2);
 		cout << white << player.name << reset_colour;
-		goto_coordinates(100,2);
+		goto_coordinates(110,2);
 		cout << red << enemy_name << reset_colour; 
 		goto_coordinates(1,3);
 		display_health(player.health , temp_health);
-		goto_coordinates(100,3);
+		goto_coordinates(110,3);
 		display_health(enemy_health , temp_health_enemy);
 		goto_coordinates(1,4);
 		display_stamina(player.stamina , temp_stamina);	
-		goto_coordinates(100,4);
+		goto_coordinates(110,4);
 		display_stamina(enemy_stamina, temp_stamina_enemy);
-		
-		goto_coordinates(1,12);
-		cout << "> leagendry Weapon \t (1) \n > Portion         \t (2)" ;
 		
 		if(turn)
 		{
-			goto_coordinates(1,35);
-			cout << yellow << ">" << reset_colour;
+			goto_coordinates(55,6);
+			cout << cyan << "YOUR  TURN" << reset_colour;
 		}
 		else if(turn == false)
 		{
-			goto_coordinates(115,35);
-			cout << orange << "<" << reset_colour;
+			goto_coordinates(55,6);
+			cout << orange << "ENEMY TURN" << reset_colour;
 		}
 		
-		goto_coordinates(10,35);
+		
+		goto_coordinates(40,9);
+		cout << ">\tleagendry Weapon  \t (1)"; 
+		goto_coordinates(40,11);
+		cout <<	">\tPortion           \t (2)";
+		goto_coordinates(40,13);
+		cout << ">\tAttack            \t (a)";
+		goto_coordinates(40,15);
+		cout << ">\tDefend            \t (d)";
+		goto_coordinates(40,17);
+		cout << ">\tSkip(Gain_stamina)\t (t)";
+		
+		goto_coordinates(26,25);
 		cout << player.name ;
-		goto_coordinates(90,35);
+		goto_coordinates(90,25);
 		cout << orange << enemy_name << reset_colour;
 		
-		goto_coordinates(1,40);
-		cout << "> Attack \t (a)  \t> Defend \t (d)  \t> Skip \t (t)";
 		
 		if(turn)
 		{
@@ -512,7 +518,7 @@ void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enem
 			else if(user_enter == 'a')
 			{
 				int dam;
-				throw_animation("~", 10, 35, 90, 5, true);
+				throw_animation(" --", 30, 25, 90, 10, true);
 				dam = hit_damage(player.damage, player.stamina, player.critical_hit_chance, max_critical_damage);
 				enemy_health -= dam;
 				player.stamina -= stamina_calculate(dam ,player.stamina);
@@ -528,12 +534,13 @@ void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enem
 		{
 			int dam;
 			Sleep(1000);
-			throw_animation("~", 90, 35, 10, 5, false);
+			throw_animation("@@ ", 86, 25, 27, 10, false);
 			dam = hit_damage(enemy_damage, enemy_stamina, difficulty > 1 ? 20 : 10, max_critical_damage_enemy);
 			player.health -= dam;
 			enemy_stamina -= stamina_calculate(dam, enemy_stamina);
 			turn = true;
 		}
+		
 	}while(player.health > 0 && enemy_health > 0);
 	
 	if(player.health > 0)
