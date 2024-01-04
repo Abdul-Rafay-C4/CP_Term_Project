@@ -85,7 +85,8 @@ void convert_to_uppercase(string& lowercase);
 void text_animation(string& sentence, string& colour, bool uppercase, int time = 30);
 
 //
-void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, char weapon, bool &win_lose, int max_critical_damage);
+void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, string enemy_weapon, bool &win_lose, int max_critical_damage_player, string player_weapon );
+
 
 //-------------------MUHAMMAD_HAMZA------------------------
 //16-12-23 (15:41)
@@ -130,7 +131,11 @@ int main()
 	player.stamina = 100;
 	player.critical_hit_chance = 30;
 	
-	battle_system(1,500,80,10,40,"Golaith ",'~',win_lose,50);
+	string player_weapon, enemy_weapon;
+	player_weapon = " @";
+	enemy_weapon = "- ";
+	
+	battle_system(false,500,80,10,40,"Golaith ",enemy_weapon,win_lose,50,player_weapon);
 	/*Sleep(50);
 	blankscreen();
 	Sleep(150);
@@ -448,7 +453,7 @@ void text_animation(string& sentence, string& colour, bool uppercase, int time)
 	cout << reset_colour;
 }
 
-void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, char weapon, bool &win_lose, int max_critical_damage)
+void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, string enemy_weapon, bool &win_lose, int max_critical_damage_player, string player_weapon )
 {
 	int temp_health = player.health;
 	int temp_health_enemy = enemy_health;
@@ -518,8 +523,8 @@ void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enem
 			else if(user_enter == 'a')
 			{
 				int dam;
-				throw_animation(" --", 30, 25, 90, 10, true);
-				dam = hit_damage(player.damage, player.stamina, player.critical_hit_chance, max_critical_damage);
+				throw_animation(player_weapon, 30, 25, 90, 10, true);
+				dam = hit_damage(player.damage, player.stamina, player.critical_hit_chance, max_critical_damage_player);
 				enemy_health -= dam;
 				player.stamina -= stamina_calculate(dam ,player.stamina);
 				turn = false;
@@ -534,8 +539,8 @@ void battle_system(int difficulty, int enemy_health, int enemy_stamina, int enem
 		{
 			int dam;
 			Sleep(1000);
-			throw_animation("@@ ", 86, 25, 27, 10, false);
-			dam = hit_damage(enemy_damage, enemy_stamina, difficulty > 1 ? 20 : 10, max_critical_damage_enemy);
+			throw_animation(enemy_weapon, 86, 25, 27, 10, false);
+			dam = hit_damage(enemy_damage, enemy_stamina, difficulty == true ? 20 : 10, max_critical_damage_enemy);
 			player.health -= dam;
 			enemy_stamina -= stamina_calculate(dam, enemy_stamina);
 			turn = true;
