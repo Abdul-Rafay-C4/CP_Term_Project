@@ -85,7 +85,7 @@ void convert_to_uppercase(string& lowercase);
 void text_animation(string& sentence, string& colour, bool uppercase, int time = 30);
 
 //
-void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, string enemy_weapon, bool &win_lose, int max_critical_damage_player, string player_weapon );
+void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, string enemy_weapon, bool &win_lose, int max_critical_damage_player, string player_weapon, int legendary_weapon_damage);
 
 
 //-------------------MUHAMMAD_HAMZA------------------------
@@ -135,7 +135,7 @@ int main()
 	player_weapon = " @";
 	enemy_weapon = "- ";
 	
-	battle_system(false,500,80,10,40,"Golaith ",enemy_weapon,win_lose,50,player_weapon);
+	battle_system(false,500,80,10,40,"Golaith ",enemy_weapon,win_lose,50,player_weapon,100);
 	/*Sleep(50);
 	blankscreen();
 	Sleep(150);
@@ -453,7 +453,7 @@ void text_animation(string& sentence, string& colour, bool uppercase, int time)
 	cout << reset_colour;
 }
 
-void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, string enemy_weapon, bool &win_lose, int max_critical_damage_player, string player_weapon )
+void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, string enemy_weapon, bool &win_lose, int max_critical_damage_player, string player_weapon, int legendary_weapon_damage)
 {
 	int temp_health = player.health;
 	int temp_health_enemy = enemy_health;
@@ -491,16 +491,22 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		}
 		
 		
-		goto_coordinates(40,9);
-		cout << ">\tleagendry Weapon  \t (1)"; 
-		goto_coordinates(40,11);
-		cout <<	">\tPortion           \t (2)";
-		goto_coordinates(40,13);
-		cout << ">\tAttack            \t (a)";
-		goto_coordinates(40,15);
-		cout << ">\tDefend            \t (d)";
-		goto_coordinates(40,17);
-		cout << ">\tSkip(Gain_stamina)\t (t)";
+		if(turn)
+		{
+			if(legendary_weapon_damage > 0)
+			{
+				goto_coordinates(40,9);
+				cout << ">\tleagendry Weapon  \t (1)"; 
+			}
+			goto_coordinates(40,11);
+			cout <<	">\tPortion           \t (2)";
+			goto_coordinates(40,13);
+			cout << ">\tAttack            \t (a)";
+			goto_coordinates(40,15);
+			cout << ">\tDefend            \t (d)";
+			goto_coordinates(40,17);
+			cout << ">\tSkip(Gain_stamina)\t (t)";
+		}
 		
 		goto_coordinates(26,25);
 		cout << player.name ;
@@ -514,7 +520,15 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 			
 			if(user_enter == '1')
 			{
-				
+				if(player.stamina >= 80 && legendary_weapon_damage > 0)
+				{
+					int dam;
+					throw_animation(player_weapon, 30, 25, 90, 10, true);
+					dam = hit_damage(legendary_weapon_damage, player.stamina, player.critical_hit_chance, max_critical_damage_player);
+					enemy_health -= dam;
+					player.stamina -= stamina_calculate(dam ,player.stamina);
+					turn = false;
+				}
 			}
 			else if(user_enter == '2')
 			{
@@ -1030,4 +1044,3 @@ void fight()
 	cout << player.name << setw(50) << boss1.name << endl;
 	cout << "";
 }
-
