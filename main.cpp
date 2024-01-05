@@ -89,7 +89,8 @@ void text_animation(string& sentence, string& colour, bool uppercase, int time =
 
 //
 void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, string enemy_weapon, bool &win_lose, int max_critical_damage_player, string player_weapon, int legendary_weapon_damage);
-
+//
+bool check_sapces(const string& str);
 
 //-------------------MUHAMMAD_HAMZA------------------------
 //16-12-23 (15:41)
@@ -128,7 +129,8 @@ int options(int num,string optscene, string opt1, string opt2, string opt3);
 
 int main()
 {
-	system("mode 120"); 
+	getplayername(player);
+	/*system("mode 120"); 
 	invt.health_potion = 2; 	
 	invt.stamina_potion = 2; 	
 	player.name = "ABC"; 	
@@ -139,7 +141,7 @@ int main()
 	string player_weapon, enemy_weapon; 	
 	player_weapon = " @"; 	enemy_weapon = "- "; 	 	
 	battle_system(false,500,80,100,40,"Golaith ",enemy_weapon,win_lose,50,player_weapon,100);
-	return 0;
+	return 0;*/
 }
 
 
@@ -625,6 +627,16 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 	}
 }
 
+bool check_sapces(const string& str)
+{
+	for (char c : str) {
+        if (c != ' ') {
+            return false;
+        }
+    }
+    return true;
+}
+
 //-------------------MUHAMMAD_HAMZA------------------------
 
 void getplayerinfo(character& player) //17-12-23(15:34)
@@ -1086,8 +1098,24 @@ void input_clear()
 
 void getplayername(character& player)
 {
-	cout << reset_colour << green <<"    Enter Your Name : " << reset_colour;
-	getline(cin, player.name);
+	do
+	{
+		system("cls");
+		cout << reset_colour << green <<"    Enter Your Name : " << reset_colour;
+		getline(cin, player.name);
+		if (cin.eof()) 
+		{
+            clear_n();
+            cout << "\n    Enter a valid name." << endl;
+			system("pause");
+            continue;
+        }
+		if(check_sapces(player.name))
+		{
+			cout << "\n    Enter a valid name." << endl;
+			system("pause");
+		}
+	}while(check_sapces(player.name));
 }
 
 
