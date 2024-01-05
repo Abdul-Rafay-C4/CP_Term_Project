@@ -583,9 +583,9 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 				}
 				else if(use == 's')
 				{
-					if(invt.stamina_portion > 0)
+					if(invt.stamina_portion > 0 && player.stamina < 100)
 					{
-						player.stamina += 70;
+						player.stamina = 100;
 						invt.stamina_portion--;
 						turn = false;
 					}
@@ -613,7 +613,7 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 			throw_animation(enemy_weapon, 86, 25, 27, 10, false);
 			dam = hit_damage(enemy_damage, enemy_stamina, difficulty == true ? 20 : 10, max_critical_damage_enemy);
 			player.health -= dam;
-			enemy_stamina -= stamina_calculate(dam, enemy_stamina);
+			enemy_stamina -= difficulty == true ? (stamina_calculate(dam, enemy_stamina) * 0.7) : stamina_calculate(dam, enemy_stamina);
 			turn = true;
 		}
 		
