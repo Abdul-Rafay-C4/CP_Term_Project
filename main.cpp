@@ -99,7 +99,7 @@ void displayplayerinfo(character& player);
 void Quest(character& player);
 //3-01-2024(13:17)
 void level_up();
-void exp_calculate(int * playerHealth, int quest);
+void exp_calculate();
 
 
 
@@ -697,53 +697,85 @@ void Quest(character& player)//17-12-23(15:34)
 	displayplayerinfo(player);
 }
 //3-01-2024(13:17)
-  void exp_calculate(int  * playerHealth, int quest)
+  void exp_calculate()
     {
-        
+        if(player.health > 0 && player.health < 100)
+        {
+        	if(player.level == 0)
+        	{
+        		player.experience_points += 90;
+			}
+			else if(player.level == 1)
+			{
+				player.experience_points += 230;
+			}
+			else if(player.level == 2)
+			{
+				player.experience_points += 400;
+			}
+			else if(player.level == 3)
+			{
+				player.experience_points += 650;
+			}
+			else if(player.level == 4)
+			{
+				player.experience_points += 900;
+			}
+
+		}
+		else if(player.health > 100)
+		{
+			if(player.level == 0)
+        	{
+        		player.experience_points += 100;
+			}
+			else if(player.level == 1)
+			{
+				player.experience_points += 230;
+			}
+			else if(player.level == 2)
+			{
+				player.experience_points += 500;
+			}
+			else if(player.level == 3)
+			{
+				player.experience_points += 750;
+			}
+			else if(player.level == 4)
+			{
+				player.experience_points += 1000;
+			}
+		}
     }
  //3-01-2024(13:17)
     void level_up()
     {
-        if(player.experience_points == 100)
+        if(player.experience_points == 100 && player.level == 0)
         {
             player.level = 1;
+            player.experience_points = 0;
         }
-        else if(player.experience_points == 250)
+        else if(player.experience_points == 250 && player.level == 1)
         {
             player.level = 2;
+            player.experience_points = 0;
         }
-        else if(player.experience_points == 500)
+        else if(player.experience_points == 500 && player.level == 2)
         {
             player.level = 3;
+            player.experience_points = 0;
         }
-        else if(player.experience_points == 1000)
+        else if(player.experience_points == 1000 && player.level == 3)
         {
             player.level = 4;
+            player.experience_points = 0;
         }
-        else if(player.experience_points == 1550)
+        else if(player.experience_points == 1550 && player.level == 4)
         {
             player.level = 5;
+            player.experience_points = 0;
         }
-        else if(player.experience_points == 2500)
-        {
-            player.level = 6;
-        }
-        else if(player.experience_points == 3500)
-        {
-            player.level = 7;
-        }
-        else if(player.experience_points == 5000)
-        {
-            player.level = 8;
-        }
-        else if(player.experience_points == 7500)
-        {
-            player.level = 9;
-        }
-        else if(player.experience_points == 10750)
-        {
-            player.level = 10;
-        }
+        
     }
 
 
