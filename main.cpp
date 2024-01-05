@@ -36,7 +36,7 @@ struct character
 	int level;
 	int critical_hit_chance;
 	int damage;
-	string special_weapon;	
+	int special_weapon_damage;	
 };
 
 struct inventory
@@ -129,19 +129,19 @@ int options(int num,string optscene, string opt1, string opt2, string opt3);
 
 int main()
 {
-	getplayername(player);
-	/*system("mode 120"); 
-	invt.health_potion = 2; 	
-	invt.stamina_potion = 2; 	
+	system("mode 120"); 
+	player.special_weapon_damage = 0;
+	invt.health_potion = 0; 	
+	invt.stamina_potion = 0; 	
 	player.name = "ABC"; 	
 	player.health = 500; 	
-	player.damage = 15; 	
-	player.stamina = 100; 	
+	player.damage = 15; 
+	player.stamina = 100; 
 	player.critical_hit_chance = 30; 	 	
 	string player_weapon, enemy_weapon; 	
 	player_weapon = " @"; 	enemy_weapon = "- "; 	 	
 	battle_system(false,500,80,100,40,"Golaith ",enemy_weapon,win_lose,50,player_weapon,100);
-	return 0;*/
+	return 0;
 }
 
 
@@ -495,20 +495,29 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		
 		if(turn)
 		{
-			goto_coordinates(1,9);
-			cout << ">  Special Weapon (r)";
+			if(player.special_weapon_damage > 0)
+			{
+				goto_coordinates(1,9);
+				cout << ">  Special Weapon (r)";
+			}
 			if(legendary_weapon_damage > 0)
 			{
 				goto_coordinates(40,9);
 				cout << ">\tLegendary Weapon  \t (1)"; 
 			}
-			goto_coordinates(1,11);
-			cout << ">  Health Potion  (h)";
+			if(invt.health_potion > 0)
+			{
+				goto_coordinates(1,11);
+				cout << ">  Health Potion  (h)";
+			}
 			goto_coordinates(40,11);
 			cout <<	">\tUse Inventory     \t (2)";
 			
-			goto_coordinates(1,13);
-			cout << ">  Stamina Potion (s)";
+			if(invt.stamina_potion > 0)
+			{
+				goto_coordinates(1,13);
+				cout << ">  Stamina Potion (s)";
+			}
 			goto_coordinates(40,13);
 			cout << ">\tAttack            \t (a)";
 			
@@ -1167,7 +1176,7 @@ void getplayerclass(character& player)
 				player.health = 80;
 				player.damage = 10;
 				player.critical_hit_chance = 40;
-				player.special_weapon = " -_O)";
+				invt.special_weapon_name = " -_O)";
 			}
 			else if (choice == '2')
 			{
@@ -1175,7 +1184,7 @@ void getplayerclass(character& player)
 				player.health = 120;
 				player.damage = 30;
 				player.critical_hit_chance = 20;
-				player.special_weapon = " -/--";
+				invt.special_weapon_name = " -/--";
 			}
 			else if (choice == '3')
 			{
@@ -1183,7 +1192,7 @@ void getplayerclass(character& player)
 				player.health = 100;
 				player.damage = 50;
 				player.critical_hit_chance = 10;
-				player.special_weapon = " *";
+				invt.special_weapon_name = " *";
 			}
 		}
 		else
