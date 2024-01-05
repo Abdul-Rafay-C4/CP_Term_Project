@@ -1,21 +1,16 @@
 #include<iostream>
-#include<cstdlib>
-#include<iomanip>
-#include<stdio.h>
-#include<string>
-#include<limits>
-#include<conio.h>
-#include<ctime>
-#include<math.h>
-#include<algorithm>
-#include<cctype>
 #include<windows.h>
 #undef max
+#include<limits>
+#include<iomanip>
+#include<string>
+#include<conio.h>
+#include<algorithm> //Transform
+#include <mmsystem.h>//sound
+
 #pragma comment(lib, "Winmm.lib")
-#include "mmsystem.h"
 
 using namespace std;
-
 //----------------------GLOBLE_DATA----------------------------
 
 //ABDUL RAFAY (19-12-23 (16:50))
@@ -43,18 +38,20 @@ struct character
 	int damage;
 	string special_weapon;	
 };
+
 struct inventory
 {
 	string special_weapon_name;
-	int health_portion;
-	int stamina_portion;
+	int health_potion;
+	int stamina_potion;
 };
 
 inventory invt;
 character player;
-character boss1;
+character peter;
+character unknown;
 
-string gamestory[13];
+string gamestory[50];
 
 bool win_lose;
 
@@ -84,7 +81,6 @@ void display_stamina(int& stamina, int og_stamina);
 int stamina_calculate(int& damage, int& stamina);
 void stamina_recover(int& stamina);
 
-void defend(int& damage);
 
 int percentage(int& value, int& og_value);
 //(02:40)
@@ -93,10 +89,7 @@ void text_animation(string& sentence, string& colour, bool uppercase, int time =
 
 //
 void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, string enemy_weapon, bool &win_lose, int max_critical_damage_player, string player_weapon, int legendary_weapon_damage);
-// 
-void inventory_system();
-void health_portion();
-void stamina_portion();
+
 
 //-------------------MUHAMMAD_HAMZA------------------------
 //16-12-23 (15:41)
@@ -129,36 +122,24 @@ void getplayername(character& player);
 void getplayerclass(character& player);
 //28-12-23 (09:45)
 void fight();
-void playSound(const char* soundFile);
+//3-1-24 (07:25)
+int options(int num,string optscene, string opt1, string opt2, string opt3);
 
 
 int main()
 {
-	system("mode 120");
-	invt.health_portion = 2;
-	invt.stamina_portion = 2;
-	player.name = "ABC";
-	player.health = 500;
-	player.damage = 15;
-	player.stamina = 100;
-	player.critical_hit_chance = 30;
-	
-	string player_weapon, enemy_weapon;
-	player_weapon = " @";
-	enemy_weapon = "- ";
-	
+	system("mode 120"); 
+	invt.health_potion = 2; 	
+	invt.stamina_potion = 2; 	
+	player.name = "ABC"; 	
+	player.health = 500; 	
+	player.damage = 15; 	
+	player.stamina = 100; 	
+	player.critical_hit_chance = 30; 	 	
+	string player_weapon, enemy_weapon; 	
+	player_weapon = " @"; 	enemy_weapon = "- "; 	 	
 	battle_system(false,500,80,100,40,"Golaith ",enemy_weapon,win_lose,50,player_weapon,100);
-	/*Sleep(50);
-	blankscreen();
-	Sleep(150);
-	gamelogoscreen();
-	Sleep(150);
-	menu();
-	//character player;
-	//getplayerinfo(player);
-	//Quest(player);
-
-	return 0; */
+	return 0;
 }
 
 
@@ -282,7 +263,7 @@ void display_health(int& health, int og_health)
 void clear_n()
 {
 	cin.clear();
-	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 int random(int first_value, int second_value)
 {
@@ -438,10 +419,6 @@ int percentage(int& value, int& og_value)
 	return (value * 100) / og_value;
 }
 
-void defend(int& damage)
-{
-	damage = (random(80, 100) * damage) / 100;
-}
 
 //(02:40)
 void convert_to_uppercase(string& lowercase)
@@ -459,7 +436,10 @@ void text_animation(string& sentence, string& colour, bool uppercase, int time)
 	int a = sentence.size();
 	for (int i = 0; i < a; ++i)
 	{
+		
+		
 		cout << sentence[i];
+		
 		Sleep(time);
 	}
 	cout << reset_colour;
@@ -471,6 +451,8 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 	int temp_health_enemy = enemy_health;
 	int temp_stamina = player.stamina;
 	int temp_stamina_enemy = enemy_stamina;
+	int temp_health_potion = invt.health_potion;
+	int temp_stamina_potion = invt.stamina_potion;
 	
 	bool turn = true;
 	
@@ -512,26 +494,23 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		if(turn)
 		{
 			goto_coordinates(1,9);
-			cout << ">\tSpecial Weapon     (r)";
+			cout << ">\tSpecial Weapon (r)";
 			if(legendary_weapon_damage > 0)
 			{
 				goto_coordinates(40,9);
 				cout << ">\tlegendary Weapon  \t (1)"; 
 			}
 			goto_coordinates(1,11);
-			cout << ">\tHealth Portion     (h)";
+			cout << ">\tHealth Potion  (h)";
 			goto_coordinates(40,11);
 			cout <<	">\tUse Inventory     \t (2)";
 			
 			goto_coordinates(1,13);
-			cout << ">\tStamina Portion    (s)";
+			cout << ">\tStamina Potion (s)";
 			goto_coordinates(40,13);
 			cout << ">\tAttack            \t (a)";
 			
 			goto_coordinates(40,15);
-			cout << ">\tDefend            \t (d)";
-			
-			goto_coordinates(40,17);
 			cout << ">\tSkip(Gain Stamina)\t (t)";
 		}
 		
@@ -574,19 +553,19 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 				}
 				else if(use == 'h')
 				{
-					if(invt.health_portion > 0)
+					if(invt.health_potion > 0)
 					{
 						player.health += 100;
-						invt.health_portion--;
+						invt.health_potion--;
 						turn = false;
 					}
 				}
 				else if(use == 's')
 				{
-					if(invt.stamina_portion > 0 && player.stamina < 100)
+					if(invt.stamina_potion > 0 && player.stamina < 100)
 					{
 						player.stamina = 100;
-						invt.stamina_portion--;
+						invt.stamina_potion--;
 						turn = false;
 					}
 				}
@@ -616,6 +595,23 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 			enemy_stamina -= difficulty == true ? (stamina_calculate(dam, enemy_stamina) * 0.7) : stamina_calculate(dam, enemy_stamina);
 			turn = true;
 		}
+		if(player.health <= 0)
+		{
+			char che;
+			system("cls");
+			cout << "\n You Lose. Do you want to retry?";
+			che = _getch();
+			if(che == 'y')
+			{
+				player.health = temp_health;
+				player.stamina = temp_stamina;
+				invt.health_potion = temp_health_potion;
+				invt.stamina_potion = temp_stamina_potion;
+				enemy_health = temp_health_enemy;
+				enemy_stamina = temp_stamina_enemy;
+			}
+		}
+		
 		
 	}while(player.health > 0 && enemy_health > 0);
 	
@@ -628,6 +624,7 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		win_lose = false;
 	}
 }
+
 //-------------------MUHAMMAD_HAMZA------------------------
 
 void getplayerinfo(character& player) //17-12-23(15:34)
@@ -759,10 +756,37 @@ void dailougeAndStory()
 	gamestory[8] = "    MAN: Tell me your class.\n    YOU: I choose " + player._class + ".\n    MAN: Now wait there.\n\n    After sometime...\n\n    MAN: Get ready for your trail fight.\n\n    I was ready for the fight. If you wondering how I know to fight, that's a good question.\n    It was just in the script.";
 	//trails round 1
 	gamestory[9] = "    But, You won't believe my fight opponent. It was Peter. I was thinking how I will fight him.";
-	gamestory[10] = "    I won against Peter but I wasn't not so happy. A Man came to me and told me that I will continue my training in thier academy in Tibet";
+	//fight scene    11xp
+	gamestory[10] = "    I won against Peter but I wasn't not so happy. A Man came to me and told me that I will continue my training in their academy in Tibet";
 	//after training
-	gamestory[11] = "    On my last day, I got an invitaion to meet the Master Sifu. When I entered his big wooden room, he told me to sit down...\n\n    SIFU: Do you know why I call you here ?\n    YOU: No, I don't.\n    SIFU: I know you are still an amateur, but you are a chosen one.\n    YOU: What ?\n    SIFU: Long time ago, this village was once called Santoki No Machi that means city of fighters.\n    There were all kind of fighters living and protecting this village from mystical attacks, that comes from another dimension.\n    As the time passes, the mystical creatures got powerful and eventually started killing the people and fighters there.\n    Then a mage named \"Delsagade\" stood from the outskirts of the city and stopped the mystical creatures from coming to this world\n    and that you can guess how the new name of the village came up.\n    YOU: Why are you telling me this and how does that make me a chosen one.\n    SIFU: Delsagade before his death, gave a prediction that when the mystical creatures become strong enough to break out of the portal, then a " + player._class + " with my birth mark will arise to stop them once and for all....\n";
-	gamestory[12] = "    I am now in the jungles of Mongolia, looking for the signs to find anything ";
+	gamestory[11] = "    On my last day, I got an invitaion to meet the Master Sifu. When I entered his big wooden room, he told me to sit down...\n\n    SIFU: Do you know why I call you here ?\n    YOU: No, I don't. I guess it is related to my last day ?\n    SIFU: I know you are new to the darkness of the mystical world, but you were choose to be like this. \n    YOU: What ?\n    SIFU: Long time ago, this village was once called Santoki No Machi that means city of fighters.\n    There were all kind of fighters living and protecting this village from mystical attacks, that comes from another dimension.\n    As the time passes, the mystical creatures got powerful and eventually started killing the people and fighters there.\n    Then a mage named \"Delsagade\" stood from the outskirts of the city and stopped the mystical creatures from coming to this world\n    and that you can guess how the new name of the village came up.\n    YOU: Why are you telling me this and how does that make me a chosen one.\n    SIFU: Delsagade before his death, gave a prediction that when the mystical creatures become strong enough to break out of the portal, then a " + player._class + " with my birth mark will arise to stop them once and for all....\n";
+	//climax         6 months ago
+	gamestory[12] = "    Now, I am in the jungles of Mongolian Mountains, looking for the signs to find anything strange that could lead me to the portal of darkness.\n\n    ;|\n\n    ........................... \n\n    I hear some strange sounds coming from the bushes. \n\n    ........................... \n\n    Suddenly, a strange mystical creature appear out of no-where and ... \n\n    Attacked me !?";
+	//fightscene   unknown 
+	gamestory[13] = "    I think I defeated him or He just disappeared into thin air. But, I knew the dark portal was near...";
+	//choiceoption1  > follow the smoke  > explore the mountain 
+	// follow the smoke
+	//side quest
+	gamestory[14] = "    After following the smoke for several hours, I reached at the entrance of a village which was in shambles. 	 \n    At the entrance of the village, I saw a strange creature standing near a man who was covered in wounds from head to toe. \n\n    YOU: Are u alright ?\n\n    The man fell to his knees coughing up blood. So, I ran to his aid but, the creature didn't like me I guess....\n";
+	//fightscence  unknown
+	gamestory[15] = "    YOU: What happened here ?\n    MAN: It was a massacre. The enderspirits attacked us. There was a gaint man. He was in search of the reincarnate of the Warrior \"Delsagade\".\n    MAN: He had an unimaginable amount of power which was seen in the dark times when mystical creatures ruled the world. He had a lust for blood and hunger for noodles.\n    MAN: So, he was looking for only two things; one was the reincarnate being and other were special edition noodles. We were just the biproduct.\n    YOU: Do you know anything else about this man ?\n    MAN: He called himself \"Waleed the Golaith\". \n\n    Those were the last word man uttered....";
+	//this follow -----(><)
+	//explore the mountain
+	gamestory[16] = "    After sensing the presence of the dark portal, I carried to move on deeper in the forest. \n    After exploring for a few hours, I saw a pack of Hogriders which were being controlled by people which seemed to be activists of a dark community.\n    I was watching them from a distance, as they were brutally attacking a band of hikers. I tried to stay out of this but could not bottle up my emotions.\n    So, I went and confronted the leader of the pack head on.";
+	gamestory[17] = "    YOU: Stop right there. I challenge you to a one on one battle. If I am victorious you will leave the hikers alone.\n    PACK LEADER: Well well well, what do we have here is a tiny creature challenging me for a battle. That shelby be fun.";
+	//fight scene
+	gamestory[18] = "    After brutally humiliating the pack leader.\n\n    YOU: As per our condition, you will let these innocent hikers go. \n YOU: What were you doing here.\n    PACK LEADER: I was given a task of finding everything I could about the reincarnation of a Famous Warrior Delsagade. I am sure you have heard about him, don't ya.\n    YOU: Yes ? I have heard about him. PACK LEADER: What were you doing here ?\n    YOU: I am also a hiker. Who r u? \n    PACK LEADER: I am a member of gang called dark triad. I work under a person called \"Waleed the Golaith\". He has an unimaginable amount of power which was seen in the dark times when mystical creatures ruled the world.\n    PACK LEADER: He has a lust for blood and hunger for noodles. So, he is looking for only two things; one is the reincarnate being and other are special edition noodles.\n\n    After that we went our ways, and I found a demolished village after exploring for several hours";
+	//merge
+	gamestory[19] = "    I could not asked him about the dark portal. At the end of the village, I saw a flying pigeon coming towards me. It seems I know this pigeon very well.\n    When it got near, I realized it was my pigeon but with a red ribbon ( red ribbon is used only when there is danger )....\n    When I opened the letter attached to it it says: \n\n      )   Hello, Charlie. ( Charlie was my nickname ) I ho5pe you are alright.   (\n   	(    I just wanted to tell you that     DON'T C0ME TO THE VILLAGE...         )\n      )   The Dels4gade has been attacked by some mystical powers, but, don't    ( \n     (    worry we are save as we run away and find a she1ter in a cave nearby    )\n      )   Love you Charlie ,                                                     (\n     (                                                                            )\n	     )                                                        Your Mom  ----    (\n\n    Hint: Within the cryptic folds of a heartfelt missive, unveil the enigmatic 4 cipher";
+	 //choice opt 2 > go to village or stay 
+	 //go to village
+	 gamestory[20] = "    I have reached the village. It is completely destoryed so my heart ( My Homeplace :'[ ). I was filled with anger to get revenge.\n    Now I have a strong purpose than just being somebody's prediction. And well look what I found here is a bunch of enderspirits to start with...";
+	 //fight scene enderspirits '.:'. 
+	 gamestory[21] = "    ";
+	 //stay..
+	 gamestory[22] = "    I have looking everywhere on this mountain for some signs for dark portal but could not find one. It was mid-night. I was tired and was thinking that it could be a wrong decision to not go to the village. So, I decided to check the village once.";
+	
+
 }
 
 void blankscreen()
@@ -959,7 +983,7 @@ void gamestart()
 	//i can do all this in one loop
 	//i don't know why i am doing this...
 	dailougeAndStory();
-	int choice = 0, i = 0;
+	int choice = 0;
 	bool check = false;
 	string color = white;
 	bool uppercase = false;
@@ -968,7 +992,7 @@ void gamestart()
 		system("cls");
 		cout << "\n\n";
 		bool uppercase = false;
-		text_animation(gamestory[i], color, uppercase, 26);
+		text_animation(gamestory[i], color, uppercase, 22);
 		cout << "\n\n    ";
 		system("pause");
 	}
@@ -981,7 +1005,7 @@ void gamestart()
 		system("cls");
 		cout << "\n\n";
 		bool uppercase = false;
-		text_animation(gamestory[i], color, uppercase, 26);
+		text_animation(gamestory[i], color, uppercase, 22);
 		cout << "\n\n    ";
 		if (i != 7)
 		{
@@ -1062,7 +1086,7 @@ void input_clear()
 
 void getplayername(character& player)
 {
-	cout << "    Enter Your Name : ";
+	cout << reset_colour << green <<"    Enter Your Name : " << reset_colour;
 	getline(cin, player.name);
 }
 
@@ -1111,6 +1135,47 @@ void getplayerclass(character& player)
 
 void fight()
 {
-	cout << player.name << setw(50) << boss1.name << endl;
+	cout << player.name << setw(50) << peter.name << endl;
 	cout << "";
 }
+
+
+int options(int num,string optscene, string opt1, string opt2, string opt3)
+{
+	cout << "\n\n    " + optscene;
+	cout << "\n\n    > " << opt1;
+	cout << "\n    > " << opt2;
+	if (num == 3)
+	{
+		cout << "\n    > " << opt3;
+	}
+	bool check = false;
+	while (check == false)
+	{
+		char choice = _getch();
+		if (isdigit(choice))
+		{
+			if (choice == '1')
+			{
+				check = true;
+				return 1;
+			}
+			else if (choice == '2')
+			{
+				check = true;
+				return 2;
+			}
+			else if (num == 3 && choice == '3')
+			{
+				check = true;
+				return 3;
+			}
+		}
+		else
+		{
+			input_clear();
+		}
+	}
+	return 0;
+}
+
