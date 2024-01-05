@@ -476,7 +476,7 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		if(turn)
 		{
 			goto_coordinates(1,6);
-			cout << ">\tInventory";
+			cout << "     Inventory";
 		}
 		
 		if(turn)
@@ -494,24 +494,24 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		if(turn)
 		{
 			goto_coordinates(1,9);
-			cout << ">\tSpecial Weapon (r)";
+			cout << ">  Special Weapon (r)";
 			if(legendary_weapon_damage > 0)
 			{
 				goto_coordinates(40,9);
-				cout << ">\tlegendary Weapon  \t (1)"; 
+				cout << ">\tLegendary Weapon  \t (1)"; 
 			}
 			goto_coordinates(1,11);
-			cout << ">\tHealth Potion  (h)";
+			cout << ">  Health Potion  (h)";
 			goto_coordinates(40,11);
 			cout <<	">\tUse Inventory     \t (2)";
 			
 			goto_coordinates(1,13);
-			cout << ">\tStamina Potion (s)";
+			cout << ">  Stamina Potion (s)";
 			goto_coordinates(40,13);
 			cout << ">\tAttack            \t (a)";
 			
 			goto_coordinates(40,15);
-			cout << ">\tSkip(Gain Stamina)\t (t)";
+			cout << ">\tSkip (Gain Stamina)\t (t)";
 		}
 		
 		goto_coordinates(26,25);
@@ -599,7 +599,7 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		{
 			char che;
 			system("cls");
-			cout << "\n You Lose. Do you want to retry?";
+			cout << "\n You Lose. Do you want to retry? (y for yes/press any key to return to the menu)";
 			che = _getch();
 			if(che == 'y')
 			{
