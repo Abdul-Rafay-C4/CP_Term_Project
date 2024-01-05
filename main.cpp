@@ -41,9 +41,16 @@ struct character
 	int level;
 	int critical_hit_chance;
 	int damage;
-	
+	string special_weapon;	
+};
+struct inventory
+{
+	string special_weapon_name;
+	int health_portion;
+	int stamina_portion;
 };
 
+inventory invt;
 character player;
 character boss1;
 
@@ -86,7 +93,10 @@ void text_animation(string& sentence, string& colour, bool uppercase, int time =
 
 //
 void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, string enemy_weapon, bool &win_lose, int max_critical_damage_player, string player_weapon, int legendary_weapon_damage);
-
+// 
+void inventory_system();
+void health_portion();
+void stamina_portion();
 
 //-------------------MUHAMMAD_HAMZA------------------------
 //16-12-23 (15:41)
@@ -125,6 +135,8 @@ void playSound(const char* soundFile);
 int main()
 {
 	system("mode 120");
+	invt.health_portion = 2;
+	invt.stamina_portion = 2;
 	player.name = "ABC";
 	player.health = 500;
 	player.damage = 15;
@@ -135,7 +147,7 @@ int main()
 	player_weapon = " @";
 	enemy_weapon = "- ";
 	
-	battle_system(false,500,80,10,40,"Golaith ",enemy_weapon,win_lose,50,player_weapon,100);
+	battle_system(false,500,80,100,40,"Golaith ",enemy_weapon,win_lose,50,player_weapon,100);
 	/*Sleep(50);
 	blankscreen();
 	Sleep(150);
@@ -481,6 +493,12 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		
 		if(turn)
 		{
+			goto_coordinates(1,6);
+			cout << ">\tInventory";
+		}
+		
+		if(turn)
+		{
 			goto_coordinates(55,6);
 			cout << cyan << "YOUR  TURN" << reset_colour;
 		}
@@ -493,26 +511,34 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		
 		if(turn)
 		{
+			goto_coordinates(1,9);
+			cout << ">\tSpecial Weapon     (r)";
 			if(legendary_weapon_damage > 0)
 			{
 				goto_coordinates(40,9);
-				cout << ">\tleagendry Weapon  \t (1)"; 
+				cout << ">\tlegendary Weapon  \t (1)"; 
 			}
+			goto_coordinates(1,11);
+			cout << ">\tHealth Portion     (h)";
 			goto_coordinates(40,11);
-			cout <<	">\tPortion           \t (2)";
+			cout <<	">\tUse Inventory     \t (2)";
+			
+			goto_coordinates(1,13);
+			cout << ">\tStamina Portion    (s)";
 			goto_coordinates(40,13);
 			cout << ">\tAttack            \t (a)";
+			
 			goto_coordinates(40,15);
 			cout << ">\tDefend            \t (d)";
+			
 			goto_coordinates(40,17);
-			cout << ">\tSkip(Gain_stamina)\t (t)";
+			cout << ">\tSkip(Gain Stamina)\t (t)";
 		}
 		
 		goto_coordinates(26,25);
 		cout << player.name ;
 		goto_coordinates(90,25);
 		cout << orange << enemy_name << reset_colour;
-		
 		
 		if(turn)
 		{
@@ -532,7 +558,38 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 			}
 			else if(user_enter == '2')
 			{
-				
+				char use;
+				use = _getch();
+				if(use == 'r')
+				{
+					if(player.stamina > 90)
+					{
+						int dam;
+						throw_animation(player_weapon, 30, 25, 90, 10, true);
+						dam = hit_damage(player.damage + 100, player.stamina, player.critical_hit_chance, max_critical_damage_player);
+						enemy_health -= dam;
+						player.stamina -= stamina_calculate(dam ,player.stamina);
+						turn = false;
+					}
+				}
+				else if(use == 'h')
+				{
+					if(invt.health_portion > 0)
+					{
+						player.health += 100;
+						invt.health_portion--;
+						turn = false;
+					}
+				}
+				else if(use == 's')
+				{
+					if(invt.stamina_portion > 0)
+					{
+						player.stamina += 70;
+						invt.stamina_portion--;
+						turn = false;
+					}
+				}
 			}
 			else if(user_enter == 'a')
 			{
@@ -571,7 +628,6 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		win_lose = false;
 	}
 }
-
 //-------------------MUHAMMAD_HAMZA------------------------
 
 void getplayerinfo(character& player) //17-12-23(15:34)
@@ -1019,17 +1075,31 @@ void getplayerclass(character& player)
 		char choice = _getch();
 		if (isdigit(choice))
 		{
+			player.experience_points = 0;
+			player.level = 0;
 			if (choice == '1')
 			{
 				player._class = "Mage";
+				player.health = 80;
+				player.damage = 10;
+				player.critical_hit_chance = 40;
+				player.special_weapon = " -_O)";
 			}
 			else if (choice == '2')
 			{
 				player._class = "Warrior";
+				player.health = 120;
+				player.damage = 30;
+				player.critical_hit_chance = 20;
+				player.special_weapon = " -/--";
 			}
 			else if (choice == '3')
 			{
 				player._class = "Rouge";
+				player.health = 100;
+				player.damage = 50;
+				player.critical_hit_chance = 10;
+				player.special_weapon = " *";
 			}
 		}
 		else
