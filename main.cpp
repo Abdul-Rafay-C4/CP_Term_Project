@@ -91,6 +91,8 @@ void text_animation(string& sentence, string& colour, bool uppercase, int time =
 void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int enemy_damage, int max_critical_damage_enemy, string enemy_name, string enemy_weapon, bool &win_lose, int max_critical_damage_player, string player_weapon, int legendary_weapon_damage);
 //
 bool check_sapces(const string& str);
+//
+void defend();
 
 //-------------------MUHAMMAD_HAMZA------------------------
 //16-12-23 (15:41)
@@ -130,17 +132,17 @@ int options(int num,string optscene, string opt1, string opt2, string opt3);
 int main()
 {
 	system("mode 120"); 
-	player.special_weapon_damage = 0;
-	invt.health_potion = 0; 	
-	invt.stamina_potion = 0; 	
-	player.name = "ABC"; 	
-	player.health = 500; 	
-	player.damage = 15; 
+	player.special_weapon_damage = 200;
+	invt.health_potion = 3; 	
+	invt.stamina_potion = 3; 	
+	player.name = "CHARLIE"; 	
+	player.health = 300; 	
+	player.damage = 30; 
 	player.stamina = 100; 
-	player.critical_hit_chance = 30; 	 	
+	player.critical_hit_chance = 10; 	 	
 	string player_weapon, enemy_weapon; 	
-	player_weapon = " @"; 	enemy_weapon = "- "; 	 	
-	battle_system(false,500,80,100,40,"Golaith ",enemy_weapon,win_lose,50,player_weapon,100);
+	player_weapon = " -->"; 	enemy_weapon = "- "; 	 	
+	battle_system(false,500,300,50,40,"Golaith ",enemy_weapon,win_lose,100,player_weapon,100);
 	return 0;
 }
 
@@ -477,8 +479,7 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		
 		if(turn)
 		{
-			goto_coordinates(1,6);
-			cout << "     Inventory";
+			
 		}
 		
 		if(turn)
@@ -495,33 +496,26 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 		
 		if(turn)
 		{
-			if(player.special_weapon_damage > 0)
-			{
-				goto_coordinates(1,9);
-				cout << ">  Special Weapon (r)";
-			}
+			
 			if(legendary_weapon_damage > 0)
 			{
-				goto_coordinates(40,9);
+				goto_coordinates(45,9);
 				cout << ">\tLegendary Weapon  \t (1)"; 
 			}
-			if(invt.health_potion > 0)
+			else
 			{
-				goto_coordinates(1,11);
-				cout << ">  Health Potion  (h)";
+				goto_coordinates(45,9);
+				cout << ">\tempty";
 			}
-			goto_coordinates(40,11);
+			
+			goto_coordinates(45,11);
 			cout <<	">\tUse Inventory     \t (2)";
 			
-			if(invt.stamina_potion > 0)
-			{
-				goto_coordinates(1,13);
-				cout << ">  Stamina Potion (s)";
-			}
-			goto_coordinates(40,13);
+			
+			goto_coordinates(45,13);
 			cout << ">\tAttack            \t (a)";
 			
-			goto_coordinates(40,15);
+			goto_coordinates(45,15);
 			cout << ">\tSkip (Gain Stamina)\t (t)";
 		}
 		
@@ -548,9 +542,46 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 			}
 			else if(user_enter == '2')
 			{
+				goto_coordinates(1,6);
+				cout << red << ">" << reset_colour;
+				//------------------DISPLAY--------------------
+				goto_coordinates(9,6);
+				cout << magenta << "Inventory" << reset_colour;
+				
+				if(player.special_weapon_damage > 0)
+				{
+					goto_coordinates(1,9);
+					cout << ">\tSpecial Weapon (1)";
+				}
+				else
+				{
+					goto_coordinates(1,9);
+					cout << ">\tempty";
+				}
+				if(invt.health_potion > 0)
+				{
+					goto_coordinates(1,11);
+					cout << ">  (" << green << invt.health_potion << reset_colour << ") Health Potion  (2)";
+				}
+				else
+				{
+					goto_coordinates(1,11);
+					cout << ">\tempty";
+				}
+				if(invt.stamina_potion > 0)
+				{
+					goto_coordinates(1,13);
+					cout << ">  (" << green << invt.stamina_potion << reset_colour <<  ") Stamina Potion (3)";
+				}
+				else
+				{
+					goto_coordinates(1,13);
+					cout << ">\tempty";
+				}
+				//-------------------------------------------------
 				char use;
 				use = _getch();
-				if(use == 'r')
+				if(use == '1')
 				{
 					if(player.stamina > 90)
 					{
@@ -562,18 +593,18 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 						turn = false;
 					}
 				}
-				else if(use == 'h')
+				else if(use == '2')
 				{
-					if(invt.health_potion > 0)
+					if(invt.health_potion > 0 && player.health < temp_health)
 					{
 						player.health += 100;
 						invt.health_potion--;
 						turn = false;
 					}
 				}
-				else if(use == 's')
+				else if(use == '3')
 				{
-					if(invt.stamina_potion > 0 && player.stamina < 100)
+					if(invt.stamina_potion > 0 && player.stamina < 80)
 					{
 						player.stamina = 100;
 						invt.stamina_potion--;
@@ -645,148 +676,6 @@ bool check_sapces(const string& str)
     }
     return true;
 }
-
-//-------------------MUHAMMAD_HAMZA------------------------
-
-void getplayerinfo(character& player) //17-12-23(15:34)
-{
-
-	cout << "Enter your Player Name : ";
-	getline(cin, player.name);
-
-
-	int choice;
-	cout << "Choose your Character Class!";
-	bool check = true;
-	do {
-
-		cout << "\n 1: Warrior \n 2: Mage \n 3:Rogue \nYour Choice :";
-		cin >> choice;
-		switch (choice) {
-		case 1:
-			player._class = "Warrior";
-			player.health = 120;
-			break;
-		case 2:
-			player._class = "Mage";
-			player.health = 80;
-			break;
-		case 3:
-			player._class = "Rogue";
-			player.health = 100;
-			break;
-		default:
-			cout << "Please select Given options";
-			check = false;
-			break;
-		}
-	} while (!check);
-
-
-	player.experience_points = 0;
-
-
-}
-//Start mein health full hogi so ill initiaizel 100 hp in main//
-
-//Experience points 0 hongay bcz its start of game so ill initialize 0 in main//
-
-void displayplayerinfo(character& player)//17-12-23(15:34)
-{
-	cout << "PLAYER INFORMATION" << endl;
-	cout << "NAME :" << player.name << endl;
-	cout << "PLAYER CLASS :" << player._class << endl;
-	cout << "HEALTH :" << player.health << endl;
-	cout << "EXPERIENCE POINTS :" << player.experience_points << endl;
-}
-void Quest(character& player)//17-12-23(15:34)
-{
-
-	cout << "You reaches on a new quest!" << endl;
-	displayplayerinfo(player);
-}
-//3-01-2024(13:17)
-  void exp_calculate()
-    {
-        if(player.health > 0 && player.health < 100)
-        {
-        	if(player.level == 0)
-        	{
-        		player.experience_points += 90;
-			}
-			else if(player.level == 1)
-			{
-				player.experience_points += 230;
-			}
-			else if(player.level == 2)
-			{
-				player.experience_points += 400;
-			}
-			else if(player.level == 3)
-			{
-				player.experience_points += 650;
-			}
-			else if(player.level == 4)
-			{
-				player.experience_points += 900;
-			}
-
-		}
-		else if(player.health > 100)
-		{
-			if(player.level == 0)
-        	{
-        		player.experience_points += 100;
-			}
-			else if(player.level == 1)
-			{
-				player.experience_points += 230;
-			}
-			else if(player.level == 2)
-			{
-				player.experience_points += 500;
-			}
-			else if(player.level == 3)
-			{
-				player.experience_points += 750;
-			}
-			else if(player.level == 4)
-			{
-				player.experience_points += 1000;
-			}
-		}
-    }
- //3-01-2024(13:17)
-    void level_up()
-    {
-        if(player.experience_points == 100 && player.level == 0)
-        {
-            player.level = 1;
-            player.experience_points = 0;
-        }
-        else if(player.experience_points == 250 && player.level == 1)
-        {
-            player.level = 2;
-            player.experience_points = 0;
-        }
-        else if(player.experience_points == 500 && player.level == 2)
-        {
-            player.level = 3;
-            player.experience_points = 0;
-        }
-        else if(player.experience_points == 1000 && player.level == 3)
-        {
-            player.level = 4;
-            player.experience_points = 0;
-        }
-        else if(player.experience_points == 1550 && player.level == 4)
-        {
-            player.level = 5;
-            player.experience_points = 0;
-        }
-        
-    }
-
 
 //-------------------MUHAMMAD_JIBRAN-----------------------
 //16-12-23 (16:11)
