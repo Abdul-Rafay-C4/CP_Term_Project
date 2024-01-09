@@ -133,8 +133,8 @@ int main()
 {
 	system("mode 120"); 
 	player.special_weapon_damage = 200;
-	invt.health_potion = 3; 	
-	invt.stamina_potion = 3; 	
+	invt.health_potion = 2; 	
+	invt.stamina_potion = 2; 	
 	player.name = "CHARLIE"; 	
 	player.health = 300; 	
 	player.damage = 30; 
@@ -142,7 +142,7 @@ int main()
 	player.critical_hit_chance = 10; 	 	
 	string player_weapon, enemy_weapon; 	
 	player_weapon = " -->"; 	enemy_weapon = "- "; 	 	
-	battle_system(false,500,300,50,40,"Golaith ",enemy_weapon,win_lose,100,player_weapon,100);
+	battle_system(false,500,300,50,40,"Golaith ",enemy_weapon,win_lose,100,player_weapon,50);
 	return 0;
 }
 
@@ -530,7 +530,7 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 			
 			if(user_enter == '1')
 			{
-				if(player.stamina >= 80 && legendary_weapon_damage > 0)
+				if(player.stamina >= 50 && legendary_weapon_damage > 0)
 				{
 					int dam;
 					throw_animation(player_weapon, 30, 25, 90, 10, true);
@@ -676,6 +676,12 @@ bool check_sapces(const string& str)
     }
     return true;
 }
+
+void defend()
+{
+	
+}
+
 
 //-------------------MUHAMMAD_JIBRAN-----------------------
 //16-12-23 (16:11)
