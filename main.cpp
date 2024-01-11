@@ -440,8 +440,6 @@ void text_animation(string& sentence, string& colour, bool uppercase, int time)
 	int a = sentence.size();
 	for (int i = 0; i < a; ++i)
 	{
-		
-		
 		cout << sentence[i];
 		
 		Sleep(time);
@@ -463,6 +461,7 @@ void battle_system(bool difficulty, int enemy_health, int enemy_stamina, int ene
 	char user_enter;
 	do
 	{
+		
 		system("cls");
 		goto_coordinates(1,2);
 		cout << white << player.name << reset_colour;
